@@ -1,0 +1,9 @@
+.idea
+
+out/
+target/
+build/
+
+.env
+.env.*
+!.env.example

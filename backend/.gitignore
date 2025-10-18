@@ -1,9 +1,9 @@
-.idea
+../.idea
 
 out/
 target/
 build/
 
 .env
-.env.*
+.env.example
 !.env.example

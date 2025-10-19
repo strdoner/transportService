@@ -1,9 +1,10 @@
 package config
 
 import (
+	"os"
+
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
-	"os"
 )
 
 type DbConfig struct {
@@ -14,7 +15,7 @@ type DbConfig struct {
 	Dbname   string
 }
 
-func GetDatabaseConfig( (*DbConfig, error) {
+func GetDatabaseConfig() (*DbConfig, error) {
 	err := godotenv.Load("../.env")
 	if err != nil {
 		zap.L().Error("Failed to load .env file", zap.Error(err))
@@ -24,9 +25,9 @@ func GetDatabaseConfig( (*DbConfig, error) {
 	cfg := &DbConfig{
 		Host:     os.Getenv("host"),
 		Port:     os.Getenv("port"),
-		User:     os.Getenv("user"),
-		Password: os.Getenv("password"),
-		Dbname:   os.Getenv("dbname"),
+		User:     os.Getenv("POSTGRES_USER"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		Dbname:   os.Getenv("POSTGRES_DB"),
 	}
 
 	return cfg, nil

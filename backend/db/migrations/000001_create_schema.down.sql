@@ -1,3 +1,0 @@
-DROP TABLE IF EXISTS reservations;
-DROP TABLE IF EXISTS vehicles;
-DROP TABLE IF EXISTS parking;

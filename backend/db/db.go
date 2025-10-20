@@ -3,10 +3,9 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"transportService/config"
-
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
+	"transportService/config"
 )
 
 func StartSQLConnection() (*sql.DB, error) {

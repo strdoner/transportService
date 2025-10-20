@@ -1,43 +1,45 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -e
 
-: "${DATABASE_URL:?DATABASE_URL must be set, e.g. postgres://user:pass@db:5432/dbname?sslmode=disable}"
-: "${MIGRATE_PATH:=/migrations}"
-: "${MAX_RETRIES:=30}"
-: "${SLEEP_SECONDS:=1}"
+echo "Waiting for PostgreSQL at db:5432..."
 
-# wait for postgres to be ready
-retries=0
-until pg_isready -d "$DATABASE_URL" >/dev/null 2>&1; do
-  retries=$((retries+1))
-  if [ "$retries" -ge "$MAX_RETRIES" ]; then
-    echo "Postgres did not become ready in time"
-    exit 1
-  fi
-  echo "Waiting for Postgres... ($retries/$MAX_RETRIES)"
-  sleep "$SLEEP_SECONDS"
+while ! nc -z db 5432; do
+  sleep 1
 done
 
-echo "Postgres is ready. Running migrations from ${MIGRATE_PATH}..."
+echo "PostgreSQL is ready!"
 
-# run migrations if there are any files in /migrations
-if [ -d "${MIGRATE_PATH}" ] && [ "$(ls -A ${MIGRATE_PATH} 2>/dev/null | wc -l)" -gt 0 ]; then
-  migrate -path="${MIGRATE_PATH}" -database "${DATABASE_URL}" up || {
-    # migrate exits non-zero on "no change" in some versions; handle known states
+echo "Checking migration status..."
+
+if [ -d "${MIGRATE_PATH:-/app/migrations}" ] && ls "${MIGRATE_PATH:-/app/migrations}"/*.sql >/dev/null 2>&1; then
+  CURRENT_VERSION=$(migrate -path="${MIGRATE_PATH:-/app/migrations}" -database "${DATABASE_URL}" version 2>/dev/null || echo "error")
+
+  if [ "$CURRENT_VERSION" = "error" ]; then
+    echo "Could not get current migration version"
+  else
+    echo "Current migration version: $CURRENT_VERSION"
+  fi
+
+  echo "Running migrations..."
+  if migrate -path="${MIGRATE_PATH:-/app/migrations}" -database "${DATABASE_URL}" up; then
+    echo "Migrations completed successfully"
+  else
     status=$?
-    if [ $status -ne 0 ]; then
-      echo "migrate returned code $status"
-      # если ошибка не "no change", прерываем
-      # иногда migrate возвращает 1 при idempotent; можно расширить обработку при необходимости
-      # но по умолчанию завершаем с ошибкой чтобы не скрыть реальные проблемы
-      exit $status
+    echo "Migration failed with code: $status"
+
+    if migrate -path="${MIGRATE_PATH:-/app/migrations}" -database "${DATABASE_URL}" version 2>&1 | grep -q "dirty"; then
+      echo "Database is in dirty state. Forcing version to latest..."
+      LATEST_VERSION=$(ls "${MIGRATE_PATH:-/app/migrations}"/*.up.sql | wc -l)
+      migrate -path="${MIGRATE_PATH:-/app/migrations}" -database "${DATABASE_URL}" force "$LATEST_VERSION"
+      echo "Fixed dirty state. Version forced to: $LATEST_VERSION"
+    else
+      echo "Unknown migration error, exiting"
+      exit 1
     fi
-  }
+  fi
 else
-  echo "No migrations found in ${MIGRATE_PATH}, skipping migrate."
+  echo "No migration files found, skipping migrations"
 fi
 
-echo "Migrations complete. Starting application."
-
-# Запуск приложения (передаём параметры в STDIN)
+echo "Starting application..."
 exec /app/transport

@@ -20,7 +20,7 @@ CREATE TABLE vehicles (
 
 CREATE TABLE reservations (
   id SERIAL PRIMARY KEY,
-  parking_id INTEGER NOT NULL REFERENCES parkings(id),
+  parking_id INTEGER NOT NULL REFERENCES parking_lots(id),
   vehicle_id INTEGER NOT NULL REFERENCES vehicles(id),
   starts_at TIMESTAMPTZ NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,

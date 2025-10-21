@@ -19,6 +19,16 @@ func (h *ParkingHandler) GetParking(w http.ResponseWriter, r *http.Request) {
 	//TODO API LOGIC
 }
 
+func (h *ParkingHandler) GetParkingLots(w http.ResponseWriter, r *http.Request) {
+	_, err := h.service.GetParkingLots()
+	if err != nil {
+		zap.L().Error("Error via getting parking lots", zap.Error(err))
+		w.WriteHeader(http.StatusInternalServerError)
+		//TODO sending reason
+	}
+	//TODO sending models in json
+}
+
 func (h *ParkingHandler) CheckHealth(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"status":  "ok",

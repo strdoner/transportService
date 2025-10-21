@@ -8,7 +8,8 @@ import (
 
 func NewRouter(parkingHandler *ParkingHandler) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /parkings/{id}", parkingHandler.GetParking)
+	mux.HandleFunc("GET /parking/{id}", parkingHandler.GetParking)
+	mux.HandleFunc("GET /parking", parkingHandler.GetParkingLots)
 	mux.HandleFunc("GET /health", parkingHandler.CheckHealth)
 	// TODO other handlers
 

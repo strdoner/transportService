@@ -2,14 +2,15 @@ package services
 
 import (
 	"go.uber.org/zap"
+	"transportService/models"
 	"transportService/repository"
 )
 
 type ParkingService struct {
-	repo repository.ParkingRepository
+	repo repository.IParkingRepository
 }
 
-func NewParkingService(repo repository.ParkingRepository) *ParkingService {
+func NewParkingService(repo repository.IParkingRepository) *ParkingService {
 	service := &ParkingService{
 		repo: repo,
 	}
@@ -18,7 +19,6 @@ func NewParkingService(repo repository.ParkingRepository) *ParkingService {
 	return service
 }
 
-func (s *ParkingService) GetParkingByID(id int) (interface{}, error) {
-
-	return "not implemented yet", nil
+func (s *ParkingService) GetParkingLots() ([]models.Parking, error) {
+	return s.repo.GetAll()
 }

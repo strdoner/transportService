@@ -1,9 +1,11 @@
 package handlers
 
 import (
-	"go.uber.org/zap"
+	"encoding/json"
 	"net/http"
 	"transportService/services"
+
+	"go.uber.org/zap"
 )
 
 type VehicleHandler struct {
@@ -15,12 +17,22 @@ func NewVehicleHandler(s *services.VehicleService) *VehicleHandler {
 }
 
 func (v *VehicleHandler) GetVehicles(w http.ResponseWriter, r *http.Request) {
-	_, err := v.service.GetVehicles()
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	
+	vehicles, err := v.service.GetVehicles()
 
 	if err != nil {
 		zap.L().Error("Error via getting vehicles", zap.Error(err))
-		w.WriteHeader(http.StatusInternalServerError)
-		//TODO sending reason
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
 	//TODO sending models in json
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(vehicles); err != nil {
+		zap.L().Error("Failed to encode vehicles", zap.Error(err))
+	}
 }

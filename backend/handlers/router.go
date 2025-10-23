@@ -1,16 +1,18 @@
 package handlers
 
 import (
-	"go.uber.org/zap"
 	"net/http"
 	"transportService/middleware"
+
+	"go.uber.org/zap"
 )
 
-func NewRouter(parkingHandler *ParkingHandler) http.Handler {
+func NewRouter(parkingHandler *ParkingHandler, vehicleHandler *VehicleHandler) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /parking/{id}", parkingHandler.GetParking)
-	mux.HandleFunc("GET /parking", parkingHandler.GetParkingLots)
-	mux.HandleFunc("GET /health", parkingHandler.CheckHealth)
+	mux.HandleFunc("/parking/", parkingHandler.HandleParking)
+	mux.HandleFunc("/parking", parkingHandler.GetParkingLots)
+	mux.HandleFunc("/health", parkingHandler.CheckHealth)
+	mux.HandleFunc("/vehicles", vehicleHandler.GetVehicles)
 	// TODO other handlers
 
 	zap.L().Info("Routes registered successfully")

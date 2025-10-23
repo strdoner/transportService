@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,6 +11,8 @@ import (
 	"transportService/logger"
 	"transportService/repository"
 	"transportService/services"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -29,12 +30,15 @@ func main() {
 	//	return
 	//}
 
-	stub := repository.NewParkingStub()
+	parking_stub := repository.NewParkingStub()
+	vehicle_stub := repository.NewVehicleStub()
 
-	service := services.NewParkingService(stub)
+	parkingService := services.NewParkingService(parking_stub)
+	vehicleService := services.NewVehicleService(vehicle_stub)
 
-	parkingHandler := handlers.NewParkingHandler(service)
-	mux := handlers.NewRouter(parkingHandler)
+	parkingHandler := handlers.NewParkingHandler(parkingService)
+	vehicleHandler := handlers.NewVehicleHandler(vehicleService)
+	mux := handlers.NewRouter(parkingHandler, vehicleHandler)
 
 	server := services.NewServer(mux)
 

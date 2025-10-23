@@ -7,8 +7,9 @@ import (
 )
 
 type IParkingRepository interface {
-	GetByID(id int) (models.Parking, error)
 	GetAll() ([]models.Parking, error)
+	GetByID(id int) (models.Parking, error)
+	Reserve(id int) error
 }
 
 type ParkingRepository struct {
@@ -25,4 +26,8 @@ func (pr *ParkingRepository) GetById(id int) (models.Parking, error) {
 
 func (pr *ParkingRepository) GetAll() ([]models.Parking, error) {
 	return []models.Parking{}, fmt.Errorf("not implemented yet")
+}
+
+func (pr *ParkingRepository) Reserve(id int) error {
+	return fmt.Errorf("not implemented yet")
 }

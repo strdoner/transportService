@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"transportService/models"
 	"transportService/repository"
 )
@@ -18,5 +19,14 @@ func NewVehicleService(repo repository.IVehicleRepository) *VehicleService {
 }
 
 func (s *VehicleService) GetVehicles() ([]models.Vehicle, error) {
-	return s.repo.GetAll()
+	veh, err := s.repo.GetAll()
+    if err != nil {
+        return nil, fmt.Errorf("failed to fetch vehicle: %w", err)
+    }
+
+    if len(veh) == 0 {
+        return []models.Vehicle{}, nil
+    }
+
+    return veh, nil
 }

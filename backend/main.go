@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"transportService/db"
 	"transportService/handlers"
 	"transportService/logger"
 	"transportService/repository"
@@ -17,24 +19,25 @@ import (
 
 func main() {
 	logger.Init()
-	//db, err := dbPackage.StartSQLConnection()
-	//defer func(db *sql.DB) {
-	//	err = db.Close()
-	//	if err != nil {
-	//		zap.L().Error("Error via closing database", zap.Error(err))
-	//	}
-	//}(db)
-	//
-	//if err != nil {
-	//	zap.L().Error("Failed connecting to database", zap.Error(err))
-	//	return
-	//}
+	db, err := db.StartSQLConnection()
+	defer func(db *sql.DB) {
+		err = db.Close()
+		if err != nil {
+			zap.L().Error("Error via closing database", zap.Error(err))
+		}
+	}(db)
+	
+	if err != nil {
+		zap.L().Error("Failed connecting to database", zap.Error(err))
+		return
+	}
 
-	parking_stub := repository.NewParkingStub()
-	vehicle_stub := repository.NewVehicleStub()
+	parkingRepo := repository.NewParkingRepository(db)
+	reservationRepo := repository.NewReservationRepository(db)
+	vehicleRepo := repository.NewVehicleRepository(db)
 
-	parkingService := services.NewParkingService(parking_stub)
-	vehicleService := services.NewVehicleService(vehicle_stub)
+	parkingService := services.NewParkingService(parkingRepo, reservationRepo)
+	vehicleService := services.NewVehicleService(vehicleRepo)
 
 	parkingHandler := handlers.NewParkingHandler(parkingService)
 	vehicleHandler := handlers.NewVehicleHandler(vehicleService)

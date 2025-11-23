@@ -20,7 +20,7 @@ INSERT INTO vehicles (type, name, latitude, longitude, updated_at) VALUES
                                                                        ('bike', 'Cannondale Trail 5', 55.752345, 37.627654, NOW()),
                                                                        ('scooter', 'NIU NQi GT', 55.756789, 37.615432, NOW());
 
-INSERT INTO parkings (name, capacity, latitude, longitude, created_at) VALUES
+INSERT INTO parking_lots (name, capacity, latitude, longitude, created_at) VALUES
                                                                            ('Парковка у Кремля', 12, 55.752220, 37.615560, NOW()),
                                                                            ('Государственная парковка на Тверской', 20, 55.762340, 37.609870, NOW()),
                                                                            ('Паркинг у метро «Охотный Ряд»', 18, 55.757120, 37.617650, NOW()),

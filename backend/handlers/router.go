@@ -9,11 +9,11 @@ import (
 
 func NewRouter(parkingHandler *ParkingHandler, vehicleHandler *VehicleHandler) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/parking/", parkingHandler.HandleParking)
-	mux.HandleFunc("/parking", parkingHandler.GetParkingLots)
-	mux.HandleFunc("/health", parkingHandler.CheckHealth)
-	mux.HandleFunc("/vehicles", vehicleHandler.GetVehicles)
-	// TODO other handlers
+	mux.HandleFunc("GET /parking/{id}", parkingHandler.GetParking)
+	mux.HandleFunc("GET /parking", parkingHandler.GetParkingLots)
+	mux.HandleFunc("GET /health", parkingHandler.CheckHealth)
+	mux.HandleFunc("GET /vehicles", vehicleHandler.GetVehicles)
+	mux.HandleFunc("POST /parking/{id}/reserve", parkingHandler.ReserveParking)
 
 	zap.L().Info("Routes registered successfully")
 

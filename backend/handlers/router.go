@@ -17,7 +17,8 @@ func NewRouter(parkingHandler *ParkingHandler, vehicleHandler *VehicleHandler) h
 
 	zap.L().Info("Routes registered successfully")
 
-	loggedMux := middleware.LoggingMiddleware(mux)
+	corsMux := middleware.CORSMiddleware(mux)
+	loggedMux := middleware.LoggingMiddleware(corsMux)
 
 	return loggedMux
 }

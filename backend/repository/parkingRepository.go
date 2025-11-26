@@ -47,7 +47,7 @@ func (pr *ParkingRepository) GetByID(id int) (models.Parking, error) {
 func (pr *ParkingRepository) GetAll() ([]models.Parking, error) {
 	rows, err := pr.db.Query(`
 		SELECT id, name, capacity, latitude, longitude, created_at
-		FROM parking
+		FROM parking_lots
 		ORDER BY id
 	`)
 	if err != nil {

@@ -1,10 +1,9 @@
 package config
 
 import (
-	"os"
-
+	"fmt"
 	"github.com/joho/godotenv"
-	"go.uber.org/zap"
+	"os"
 )
 
 type DbConfig struct {
@@ -16,19 +15,32 @@ type DbConfig struct {
 }
 
 func GetDatabaseConfig() (*DbConfig, error) {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		zap.L().Error("Failed to load .env file", zap.Error(err))
-		return nil, err
+	// Загружаем .env (игнорируем ошибку, если файла нет)
+	_ = godotenv.Load("../.env")
+
+	host := os.Getenv("POSTGRES_HOST")
+	if host == "" {
+		host = "localhost"
 	}
 
-	cfg := &DbConfig{
-		Host:     os.Getenv("host"),
-		Port:     os.Getenv("port"),
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		Dbname:   os.Getenv("POSTGRES_DB"),
+	port := os.Getenv("POSTGRES_PORT")
+	if port == "" {
+		port = "5432"
 	}
 
-	return cfg, nil
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("POSTGRES_DB")
+
+	if user == "" || password == "" || dbname == "" {
+		return nil, fmt.Errorf("missing DB credentials in .env")
+	}
+
+	return &DbConfig{
+		Host:     host,
+		Port:     port,
+		User:     user,
+		Password: password,
+		Dbname:   dbname,
+	}, nil
 }

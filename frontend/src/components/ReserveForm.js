@@ -1,8 +1,7 @@
 import {React} from 'react'
 import VehicleItem from "./VehicleItem";
 
-const ReserveForm = ({vehicles, parkings}) => {
-    // TODO selecting transport and parking values by clicking on item in the list above the form
+const ReserveForm = ({vehicles, parkings, selectedVehicleId, selectedParkingId}) => {
     // TODO formatting data from form and sending it to backend on address POST localhost:8080/parking/{id}/reserve
     // TODO visualization of free space (progress bar), vehicle number from db
     return (
@@ -10,18 +9,23 @@ const ReserveForm = ({vehicles, parkings}) => {
             <form action="POST">
                 <div className="row">
                     <div className="col-6">
-                        <span className="ps-2">Выберите транспорт</span>
-                        <select className="form-select" id="transportSelect" required>
-                            {vehicles.map((item, index) => (
-                                <option value={item.id}>{item.name}</option>
+                        <span className="ps-2">Выбранная парковка</span>
+                        <select className="form-select"
+                                value={selectedParkingId || ""}
+                                disabled>
+                            {parkings.map((item) => (
+                                <option key={item.id} value={item.id}> {item.name} </option>
                             ))}
                         </select>
                     </div>
                     <div className="col-6">
-                        <span className="ps-2">Выберите парковку</span>
-                        <select className="form-select" id="transportSelect" required>
-                            {parkings.map((item, index) => (
-                                <option value={item.id}>{item.name}</option>
+                        <span className="ps-2">Выбранный транспорт</span>
+                        <select className="form-select"
+                                value={selectedVehicleId || ""}
+                                disabled
+                        >
+                            {vehicles.map((item) => (
+                                <option key={item.id} value={item.id}> {item.name} </option>
                             ))}
                         </select>
                     </div>

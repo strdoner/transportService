@@ -1,20 +1,8 @@
-// src/components/Vehicles.js
 import React, { useState, useEffect } from 'react';
 import { getAllVehicles } from '../api/api.ts';
 import VehicleItem from "./VehicleItem";
 
-const getVehicleIcon = (type) => {
-    const icons = {
-        car: '',
-        truck: '🚛',
-        motorcycle: '🏍️',
-        bike: '🚲',
-        scooter: '🛴'
-    };
-    return icons[type] || '🚗';
-};
-
-const Vehicles = ({vehicles, setVehicles}) => {
+const Vehicles = ({vehicles, setVehicles, onVehicleSelect, selectedId}) => {
     const [loading, setLoading] = useState(true);
     const [isError, setIsError] = useState(false)
 
@@ -45,8 +33,12 @@ const Vehicles = ({vehicles, setVehicles}) => {
                     <>Нет данных</>
                 ) : (
                     <>
-                        {vehicles.map((item, index) => (
-                            <VehicleItem key={index} item={item}/>
+                        {vehicles.map((item) => (
+                            <VehicleItem key={item.id}
+                                         item={item}
+                                         onClick={() => onVehicleSelect(item.id)}
+                                         isSelected={selectedId === item.id}
+                            />
 
                         ))}
                     </>

@@ -1,9 +1,8 @@
-// src/components/ParkingList.js
 import React, { useState, useEffect } from 'react';
 import {getAllParkingLots, getAllVehicles} from "../api/api.ts";
 import ParkingItem from "./ParkingItem";
 
-const ParkingList = ({parkings, setParkings}) => {
+const ParkingList = ({parkings, setParkings, onParkingSelect, selectedId}) => {
     const [loading, setLoading] = useState(true);
     const [isError, setIsError] = useState(false)
 
@@ -34,8 +33,12 @@ const ParkingList = ({parkings, setParkings}) => {
                     <>Нет данных</>
                 ) : (
                     <>
-                        {parkings.map((item, index) => (
-                            <ParkingItem key={index} item={item}/>
+                        {parkings.map((item) => (
+                            <ParkingItem key={item.id}
+                                         item={item}
+                            onClick={() => onParkingSelect(item.id)}
+                            isSelected={selectedId === item.id}
+                            />
 
                         ))}
                     </>

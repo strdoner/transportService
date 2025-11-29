@@ -21,12 +21,12 @@ RUN mv migrate /usr/local/bin/
 
 RUN apk add --no-cache postgresql-client
 
-COPY --from=builder /app/transport /app/transport
+COPY --from=builder /app/transport/ ./transport
 
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
-
+COPY ./entrypoint.sh ./
+RUN chmod +x ./entrypoint.sh
 EXPOSE 8080
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+#CMD ["sleep", "infinity"]
+
+ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]

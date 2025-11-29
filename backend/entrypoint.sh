@@ -3,7 +3,7 @@ set -e
 
 echo "Waiting for PostgreSQL at db:5432..."
 
-while ! nc -z db 5432; do
+while ! pg_isready -h db -p 5432; do
   sleep 1
 done
 

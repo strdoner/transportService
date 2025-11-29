@@ -19,22 +19,22 @@ import (
 
 func main() {
 	logger.Init()
-	db, err := db.StartSQLConnection()
+	sqlConnection, err := db.StartSQLConnection()
 	defer func(db *sql.DB) {
 		err = db.Close()
 		if err != nil {
 			zap.L().Error("Error via closing database", zap.Error(err))
 		}
-	}(db)
-	
+	}(sqlConnection)
+
 	if err != nil {
 		zap.L().Error("Failed connecting to database", zap.Error(err))
 		return
 	}
 
-	parkingRepo := repository.NewParkingRepository(db)
-	reservationRepo := repository.NewReservationRepository(db)
-	vehicleRepo := repository.NewVehicleRepository(db)
+	parkingRepo := repository.NewParkingRepository(sqlConnection)
+	reservationRepo := repository.NewReservationRepository(sqlConnection)
+	vehicleRepo := repository.NewVehicleRepository(sqlConnection)
 
 	parkingService := services.NewParkingService(parkingRepo, reservationRepo)
 	vehicleService := services.NewVehicleService(vehicleRepo)

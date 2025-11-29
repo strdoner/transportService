@@ -4,10 +4,8 @@ version: "3.8"
 services:
   db:
     image: postgres:15
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./backend/db/migrations:/docker-entrypoint-initdb.d
@@ -20,16 +18,12 @@ services:
       retries: 5
     restart: unless-stopped
 
-  transport:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_PORT: "5432"
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: transport
+    env_file:
+      - .env
     ports:
       - "8080:8080"
     depends_on:
@@ -42,7 +36,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "3000:3000"
     restart: unless-stopped
 
 volumes:

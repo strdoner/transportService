@@ -1,9 +1,11 @@
 // src/components/Vehicles.js
 import React, { useState, useEffect } from 'react';
+import { getAllVehicles } from '../api/api.ts';
+import VehicleItem from "./VehicleItem";
 
 const getVehicleIcon = (type) => {
     const icons = {
-        car: '🚗',
+        car: '',
         truck: '🚛',
         motorcycle: '🏍️',
         bike: '🚲',
@@ -12,44 +14,46 @@ const getVehicleIcon = (type) => {
     return icons[type] || '🚗';
 };
 
-const Vehicles = () => {
-    const [vehicles, setVehicles] = useState([]);
+const Vehicles = ({vehicles, setVehicles}) => {
     const [loading, setLoading] = useState(true);
+    const [isError, setIsError] = useState(false)
 
-    useEffect(() => {
-        fetch('http://localhost:8080/vehicles')
-            .then(res => res.json())
-            .then(data => {
-                setVehicles(data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
+    useEffect (() => {
+        const fetchData = async () => {
+            setLoading(true)
+            try {
+                const response = await getAllVehicles()
+                setVehicles(response)
+
+            } catch (er) {
+                setIsError(true)
+            }
+            setLoading(false)
+        }
+        fetchData()
+
     }, []);
 
     return (
-        <div>
-            <h2>Транспорт</h2>
-            <div className="scrollable">
+        <>
+            <div className="list">
                 {loading ? (
-                    <p>Загрузка...</p>
-                ) : vehicles.length === 0 ? (
-                    <p className="empty">Нет данных</p>
+                    <div className="spinner-border" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                ) : (vehicles.length === 0 ? (
+                    <>Нет данных</>
                 ) : (
-                    vehicles.map(v => (
-                        <div key={v.id} className="item">
-                            <div className="vehicle-name">{v.name}</div>
-                            <div className="vehicle-type">
-                                {getVehicleIcon(v.type)} Тип: {v.type}
-                            </div>
-                            <div className="vehicle-coords">
-                                📍 {v.latitude.toFixed(4)}, {v.longitude.toFixed(4)}
-                            </div>
-                        </div>
-                    ))
-                )}
+                    <>
+                        {vehicles.map((item, index) => (
+                            <VehicleItem key={index} item={item}/>
+
+                        ))}
+                    </>
+                ))}
             </div>
-        </div>
-    );
+        </>
+    )
 };
 
 export default Vehicles;

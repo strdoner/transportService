@@ -17,7 +17,7 @@ func NewVehicleHandler(s *services.VehicleService) *VehicleHandler {
 }
 
 func (v *VehicleHandler) GetVehicles(w http.ResponseWriter, r *http.Request) {
-	vehicles, err := v.service.GetVehicles()
+	vehicles, err := v.service.GetVehicles() // TODO add field in db for number of car etc. A123BC
 	if err != nil {
 		zap.L().Error("Error via getting vehicles", zap.Error(err))
 		http.Error(w, "internal server error", http.StatusInternalServerError)
